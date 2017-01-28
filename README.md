@@ -4,6 +4,7 @@ Monitors files and/or directories and executes commands when specified events ha
 
 ## Example usage
 Using directoryWasCreated.sh
+
 ` bash fsChangeExecute.sh -d="test" -c="bash example/directoryWasCreated.sh" -e="create"`
 
 ## Flags
