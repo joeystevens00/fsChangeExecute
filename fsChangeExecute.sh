@@ -2,6 +2,10 @@
 # AUTHOR: Joey Stevens
 # Description: This script monitors a directory, 
 # captures filesystem events and does stuff with those events
+
+source toJson.sh
+source writeToTmpFileNoAppend.sh
+
 function eventTest() {
 	shopt -s nocasematch
 	event="$1"
@@ -28,38 +32,6 @@ function setEnvVariables() {
 	export ENV_eventDirectory=$(echo -e "$tmpFileCurrent" | jq -r .eventDirectory)
 	export ENV_executedFromDirectory=$(echo -e "$tmpFileCurrent" | jq -r .executedFromDirectory)
 	export ENV_eventType=$(echo -e "$tmpFileCurrent" | jq -r .eventType)
-}
-
-function writeToTmpFileNoAppend() {
-	tmpdata="$1"
-    if [ -n "$1" ]; then # If data passed as arg
-    	tmpdata=$1
-    else
-    	while read pipe; do #  Otherwise Read pipe
-    		tmpdata=$pipe
-    	done
-    fi
-	echo "$tmpdata" > "$tmpFile"
-}
-
-function toJson() {
-		unset pipe
-        unset out
-        if [ -n "$1" ]; then 
-                data=$1
-        else 
-                while read pipe; do 
-                        data=$pipe
-                done
-        fi
-        for i in $(echo $data); do 
-                key=$(echo $i | cut -d"=" -f1)
-                value=$(echo $i | cut -d"=" -f2)
-                out+="\"$key\": \"$value\","
-        done
-        out=$(echo $out | sed 's/,$//')
-        out=$(echo "{ $out }")
-        echo "$out"
 }
 
 
@@ -125,7 +97,6 @@ argParse() {
 	esac
 	done
 	executedFromDirectory=$PWD
-	tmpFile="/tmp/.fsChangeExecute.tmp"
 	if [ "$help" == true ]; then displayHelp; fi
 	if [ -n "$directory" ]; then useDirectory="-r"; fi
 	if [ "$directory" ] && [ "$file" ]; then displayHelp; fi
