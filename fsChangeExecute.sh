@@ -17,11 +17,15 @@ function eventTest() {
 }
 
 function getDirectoryFullPath() {
-	currentPath=$PWD
-	cd $directory
-	directoryFullPath=$PWD
-	cd $currentPath
-	echo "$directoryFullPath"
+	if [ -n "$directory" ]; then 
+		echo -n ""
+	else
+		currentPath=$PWD
+		cd $directory
+		directoryFullPath=$PWD
+		cd $currentPath
+		echo "$directoryFullPath"
+	fi
 }
 
 function setEnvVariables() {
