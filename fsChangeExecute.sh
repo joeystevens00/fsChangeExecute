@@ -18,49 +18,13 @@ function monitor() {
 	 	-e "access" -e "attrib" -e "close_write" \
 	 	-e "close_nowrite" -e "close" -e "open" \
 		"$directory" "$file" | while read event; do 
-		if [ $(eventTest "CREATE" "$event") ]; then 
-			# Do something with "CREATE"
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "MODIFY" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "DELETE" "$event") ]; then
-			# Used with the deletion of files and directories
-			# rm -r test/ would trigger
-			# DELETE, ISDIR test
-			# rm test would trigger
-			# DELETE test
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "DELETE_SELF" "$event") ]; then
-			# Used with the deletion of directories. 
-			# rm -r test/ would trigger
-			# test/ DELETE_SELF
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "UNMOUNT" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "ACCESS" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "ATTRIB" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "CLOSE_WRITE" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "CLOSE_NOWRITE" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "CLOSE" "$event") ]; then
-			#echo $event
-			echo `$command`
-		elif [ $(eventTest "OPEN" "$event") ]; then
-			#echo $event
-			echo `$command`
-		fi 
+
+		for eventToMonitor in $(echo $eventsToMonitor | tr ',' '\n'); do
+			if [ $(eventTest "$eventToMonitor" "$event") ]; then 
+			echo $event
+			#echo `$command`
+			fi 
+		done
 	done
 }
 
@@ -68,6 +32,7 @@ displayHelp() {
 	echo "Placeholder help content"
 	sleep 1;
 	less $0
+	exit
 }
 
 argParse() {
@@ -83,6 +48,10 @@ argParse() {
     		;;
     	-c=*|--command=*)
     		command="${i#*=}"
+    		shift # past argument=value
+    		;;
+    	-e=*|--events=*)
+    		eventsToMonitor="${i#*=}"
     		shift # past argument=value
     		;;
         -h|--help=*)
