@@ -17,7 +17,7 @@ function eventTest() {
 }
 
 function getDirectoryFullPath() {
-	if [ -n "$directory" ]; then 
+	if [ -z "$directory" ]; then 
 		echo -n ""
 	else
 		currentPath=$PWD
