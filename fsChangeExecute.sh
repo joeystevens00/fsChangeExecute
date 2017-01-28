@@ -6,23 +6,84 @@ function eventTest() {
 	shopt -s nocasematch
 	event="$1"
 	eventNotification="$2"
-	isThisASwapFile=$(echo -e "$eventNotification" | grep -ioP "\..*\.swp")
+	isThisASwapFile=$(echo "$eventNotification" | grep -ioP "\..*\.swp")
 	if [[ "$eventNotification" == *"$event"* ]] && [ -z "$isThisASwapFile" ]; then
 		echo true;
 	fi
 }
 
+function getDirectoryFullPath() {
+	currentPath=$PWD
+	cd $directory
+	directoryFullPath=$PWD
+	cd $currentPath
+	echo "$directoryFullPath"
+}
+
+function setEnvVariables() {
+	tmpFileCurrent=$(cat $tmpFile)
+	export ENV_isDirectory=$(echo -e "$tmpFileCurrent" | jq -r .isDirectory)
+	export ENV_eventFile=$(echo -e "$tmpFileCurrent" | jq -r .eventFile)
+	export ENV_monitoredDirectory=$(echo -e "$tmpFileCurrent" | jq -r .monitoredDirectory)
+	export ENV_eventDirectory=$(echo -e "$tmpFileCurrent" | jq -r .eventDirectory)
+	export ENV_executedFromDirectory=$(echo -e "$tmpFileCurrent" | jq -r .executedFromDirectory)
+	export ENV_eventType=$(echo -e "$tmpFileCurrent" | jq -r .eventType)
+}
+
+function writeToTmpFileNoAppend() {
+	tmpdata="$1"
+    if [ -n "$1" ]; then # If data passed as arg
+    	tmpdata=$1
+    else
+    	while read pipe; do #  Otherwise Read pipe
+    		tmpdata=$pipe
+    	done
+    fi
+	echo "$tmpdata" > "$tmpFile"
+}
+
+function toJson() {
+		unset pipe
+        unset out
+        if [ -n "$1" ]; then 
+                data=$1
+        else 
+                while read pipe; do 
+                        data=$pipe
+                done
+        fi
+        for i in $(echo $data); do 
+                key=$(echo $i | cut -d"=" -f1)
+                value=$(echo $i | cut -d"=" -f2)
+                out+="\"$key\": \"$value\","
+        done
+        out=$(echo $out | sed 's/,$//')
+        out=$(echo "{ $out }")
+        echo "$out"
+}
+
+
 function monitor() {
-	inotifywait -m "$useDirectory" -e "modify" -e "create"  \
-	 	-e "delete" -e "delete_self" -e "unmount" \
-	 	-e "access" -e "attrib" -e "close_write" \
-	 	-e "close_nowrite" -e "close" -e "open" \
-		"$directory" "$file" | while read event; do 
+	eventsToMonitorCommandBuild=$(echo $eventsToMonitor | sed 's/^/-e /' | sed 's/,/ -e/g')
+	inotifywaitCommand="inotifywait -m $useDirectory $eventsToMonitorCommandBuild $directory $file"
+	`echo $inotifywaitCommand` | while read event; do 
 
 		for eventToMonitor in $(echo $eventsToMonitor | tr ',' '\n'); do
 			if [ $(eventTest "$eventToMonitor" "$event") ]; then 
-			echo $event
-			#echo `$command`
+				isDirectory=$(echo $event | grep -ioP "isdir") # Contains isdir
+				eventFile=$(echo $event | grep -oP " ([[:alnum:]]|/|\.)+$") #Get the last word 
+				eventFile=$(echo $eventFile | tr -d " ") # Remove whitespace
+				eventDirectory=$(echo $event | grep -ioP "^.*? ") # The directory that the event happend in
+				eventDirectory=$(echo $eventDirectory | sed 's/\/$//') # Remove the trailing /
+				directoryFullPath=$(getDirectoryFullPath)
+				# Using a string because passing arrays to functions sucks in bash
+				keydata="isDirectory=$isDirectory eventFile=$eventFile \
+				 		monitoredDirectory=$directoryFullPath eventDirectory=$eventDirectory \
+				  		executedFromDirectory=$executedFromDirectory eventType=$eventToMonitor"
+				#echo "$keydata"
+				toJson "$keydata" | writeToTmpFileNoAppend
+				setEnvVariables
+				echo `$command`
 			fi 
 		done
 	done
@@ -63,10 +124,14 @@ argParse() {
     		;;
 	esac
 	done
-
+	executedFromDirectory=$PWD
+	tmpFile="/tmp/.fsChangeExecute.tmp"
 	if [ "$help" == true ]; then displayHelp; fi
 	if [ -n "$directory" ]; then useDirectory="-r"; fi
 	if [ "$directory" ] && [ "$file" ]; then displayHelp; fi
+	if [ -z "$eventsToMonitor" ]; then 
+		eventsToMonitor="access, modify, attrib, close_write, close_nowrite, close, open, moved_to, moved_from, move, move_self, create, delete, delete_self, unmount"
+	fi	
 	monitor
 }
 argParse "$@"
