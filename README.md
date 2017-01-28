@@ -1,6 +1,7 @@
 # fsChangeExecute
 
-Monitors files and/or directories and executes commands when specified events happen
+Parses output from inotifywait and sets environment variables based on output allowing you to easily build logic to execute
+different commands based on the events  
 
 ## Example usage
 Using directoryWasCreated.sh
