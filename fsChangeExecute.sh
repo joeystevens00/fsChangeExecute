@@ -17,7 +17,7 @@ function monitor() {
 	 	-e "delete" -e "delete_self" -e "unmount" \
 	 	-e "access" -e "attrib" -e "close_write" \
 	 	-e "close_nowrite" -e "close" -e "open" \
-		$directory | while read event; do 
+		"$directory" "$file" | while read event; do 
 		if [ $(eventTest "CREATE" "$event") ]; then 
 			# Do something with "CREATE"
 			#echo $event
@@ -97,6 +97,7 @@ argParse() {
 
 	if [ "$help" == true ]; then displayHelp; fi
 	if [ -n "$directory" ]; then useDirectory="-r"; fi
+	if [ "$directory" ] && [ "$file" ]; then displayHelp; fi
 	monitor
 }
 argParse "$@"
