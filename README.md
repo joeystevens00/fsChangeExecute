@@ -24,14 +24,9 @@ fsChangeExecute.sh --(file|directory)=[option] --command=[option] --events=[opti
 ## Environment variables
 There are a few environment variables that you can access in your --command scripts
 
-ENV_isDirectory - Contains "ISDIR" if the event happned to a directory (empty if not)
-
-ENV_eventFile - Contains the file or directory that the event happened to
-
-ENV_monitoredDirectory - Contains the directory that is being monitored
-
-ENV_eventDirectory - Contains the directory that the event happend in
-
-ENV_executedFromDirectory - Contains the directory that fsChangeExecute was executed from
-
-ENV_eventType - Contains the type of event (e.g. create, access, modified, etc)
+ENV_isDirectory - Contains "ISDIR" if the event happned to a directory (empty if not)  
+ENV_eventFile - Contains the file or directory that the event happened to  
+ENV_monitoredDirectory - Contains the directory that is being monitored  
+ENV_eventDirectory - Contains the directory that the event happend in  
+ENV_executedFromDirectory - Contains the directory that fsChangeExecute was executed from  
+ENV_eventType - Contains the type of event (e.g. create, access, modified, etc)  
