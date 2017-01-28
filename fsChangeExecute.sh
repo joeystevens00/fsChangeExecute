@@ -16,7 +16,11 @@ function eventTest() {
 	else isThisASwapFile=""
 	fi
 
-	if [[ "$eventNotification" == *"$event"* ]] && [ -z "$isThisASwapFile" ]; then
+	if [ "$excludeRegexp" ]; then
+		doesTheExclusionMatch=$(echo "$eventNotification" | grep -ioP "$excludeRegexp")
+	fi
+
+	if [[ "$eventNotification" == *"$event"* ]] && [ -z "$isThisASwapFile" ] && [ -z "$doesTheExclusionMatch" ]; then
 		echo true;
 	fi
 }
@@ -51,6 +55,7 @@ function monitor() {
 
 		for eventToMonitor in $(echo $eventsToMonitor | tr ',' '\n'); do
 			if [ $(eventTest "$eventToMonitor" "$event") ]; then 
+				if [ "$beVerbose" ]; then echo $event; fi
 				isDirectory=$(echo $event | grep -ioP "isdir") # Contains isdir
 				eventFile=$(echo $event | grep -oP " ([[:alnum:]]|/|\.)+$") #Get the last word 
 				eventFile=$(echo $eventFile | tr -d " ") # Remove whitespace
@@ -83,6 +88,8 @@ $0 --(file|directory)=[option] --command=[option] --events=[option]]
 	-e | --events   the events to monitor
 						defaults to all events
 	-h | --help     displays this page
+	-x | --exclude  ignore events that match REGEXP
+	-v | --verbose	be verbose
 helpcontent
 exit 1
 }
@@ -106,8 +113,16 @@ argParse() {
     		eventsToMonitor="${i#*=}"
     		shift # past argument=value
     		;;
+    	-x=*|--exclude=*)
+    		excludeRegexp="${i#*=}"
+    		shift # past argument=value
+    		;;
     	-i|--ignore-swapfiles)
     		ignoreSwapFiles=true
+    		shift # past argument=value
+    		;;
+    	-v|--verbose)
+    		beVerbose=true
     		shift # past argument=value
     		;;
         -h|--help=*)
