@@ -7,6 +7,9 @@ Using directoryWasCreated.sh
 
 ` bash fsChangeExecute.sh -d="test" -c="bash example/directoryWasCreated.sh" -e="create"`
 
+![ss](http://imgur.com/6kaXFSc)
+
+
 ## Flags
 ```
 fsChangeExecute.sh --(file|directory)=[option] --command=[option] --events=[option]]
