@@ -23,6 +23,8 @@ fsChangeExecute.sh --(file|directory)=[option] --command=[option] --events=[opti
         -f |--file              the file to monitor
         -d |--directory the directory to monitor 
         -c | --command  the command to execute when events happen
+        -i | --ignore-swapfiles 
+                                        ignore events related to swap files (*.swp)
         -e | --events   the events to monitor
                                                 defaults to all events
         -h | --help     displays this page
