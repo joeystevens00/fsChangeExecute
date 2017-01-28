@@ -7,7 +7,7 @@ Using directoryWasCreated.sh
 
 ` bash fsChangeExecute.sh -d="test" -c="bash example/directoryWasCreated.sh" -e="create"`
 
-![ss](http://imgur.com/6kaXFSc)
+![ss](http://i.imgur.com/6kaXFSc.png)
 
 
 ## Flags
