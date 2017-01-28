@@ -4,11 +4,17 @@ Parses output from inotifywait and sets environment variables based on output al
 different commands based on the events  
 
 ## Example usage
-Using directoryWasCreated.sh
+Using example/directoryWasCreated.sh
 
 ` bash fsChangeExecute.sh -d="test" -c="bash example/directoryWasCreated.sh" -e="create"`
 
 ![ss](http://i.imgur.com/6kaXFSc.png)
+
+Using example/fileEventLogic.sh
+
+` bash fsChangeExecute.sh --file='test/test.txt' --command='bash example/fileEventLogic.sh'`
+
+![ss2](http://i.imgur.com/DVNBqtT.png)
 
 
 ## Flags
