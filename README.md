@@ -28,6 +28,8 @@ fsChangeExecute.sh --(file|directory)=[option] --command=[option] --events=[opti
         -e | --events   the events to monitor
                                                 defaults to all events
         -h | --help     displays this page
+        -x | --exclude  ignore events that match REGEXP
+        -v | --verbose  be verbose
 ```
 
 ## Environment variables
