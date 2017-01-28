@@ -61,11 +61,17 @@ function monitor() {
 	done
 }
 
-displayHelp() {
-	echo "Placeholder help content"
-	sleep 1;
-	less $0
-	exit
+displayHelp() { 
+cat << helpcontent
+$0 --(file|directory)=[option] --command=[option] --events=[option]]
+	-f |--file		the file to monitor
+	-d |--directory	the directory to monitor 
+	-c | --command	the command to execute when events happen
+	-e | --events   the events to monitor
+						defaults to all events
+	-h | --help     displays this page
+helpcontent
+exit 1
 }
 
 argParse() {
