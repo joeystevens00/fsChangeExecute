@@ -13,15 +13,15 @@ function eventTest() {
 }
 
 function monitor() {
-	directory="$1"
-	inotifywait -m -r -e "modify" -e "create"  \
+	inotifywait -m "$useDirectory" -e "modify" -e "create"  \
 	 	-e "delete" -e "delete_self" -e "unmount" \
 	 	-e "access" -e "attrib" -e "close_write" \
 	 	-e "close_nowrite" -e "close" -e "open" \
 		$directory | while read event; do 
 		if [ $(eventTest "CREATE" "$event") ]; then 
 			# Do something with "CREATE"
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "MODIFY" "$event") ]; then
 			echo $event
 		elif [ $(eventTest "DELETE" "$event") ]; then
@@ -86,5 +86,7 @@ argParse() {
 	done
 
 	if [ "$help" == true ]; then displayHelp; fi
+	if [ -n "$directory" ]; then useDirectory="-r"; fi
+	monitor
 }
-argParse $@
+argParse "$@"
