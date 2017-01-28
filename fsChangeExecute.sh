@@ -10,7 +10,12 @@ function eventTest() {
 	shopt -s nocasematch
 	event="$1"
 	eventNotification="$2"
-	isThisASwapFile=$(echo "$eventNotification" | grep -ioP "\..*\.swp")
+	
+	if [ "$ignoreSwapFiles" ]; then 
+		isThisASwapFile=$(echo "$eventNotification" | grep -ioP "\..*\.swp")
+	else isThisASwapFile=""
+	fi
+
 	if [[ "$eventNotification" == *"$event"* ]] && [ -z "$isThisASwapFile" ]; then
 		echo true;
 	fi
@@ -73,6 +78,8 @@ $0 --(file|directory)=[option] --command=[option] --events=[option]]
 	-f |--file		the file to monitor
 	-d |--directory	the directory to monitor 
 	-c | --command	the command to execute when events happen
+	-i | --ignore-swapfiles 
+					ignore events related to swap files (*.swp)
 	-e | --events   the events to monitor
 						defaults to all events
 	-h | --help     displays this page
@@ -97,6 +104,10 @@ argParse() {
     		;;
     	-e=*|--events=*)
     		eventsToMonitor="${i#*=}"
+    		shift # past argument=value
+    		;;
+    	-i|--ignore-swapfiles)
+    		ignoreSwapFiles=true
     		shift # past argument=value
     		;;
         -h|--help=*)
