@@ -52,6 +52,8 @@ function monitor() {
 				eventDirectory=$(echo $event | grep -ioP "^.*? ") # The directory that the event happend in
 				eventDirectory=$(echo $eventDirectory | sed 's/\/$//') # Remove the trailing /
 				directoryFullPath=$(getDirectoryFullPath)
+				# inotifywait doesn't output the event filename as the last word in single file mode
+				if [ -z "$directory" ]; then eventFile=$eventDirectory; fi 
 				# Using a string because passing arrays to functions sucks in bash
 				keydata="isDirectory=$isDirectory eventFile=$eventFile \
 				 		monitoredDirectory=$directoryFullPath eventDirectory=$eventDirectory \
