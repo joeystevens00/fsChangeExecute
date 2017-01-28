@@ -23,33 +23,43 @@ function monitor() {
 			#echo $event
 			echo `$command`
 		elif [ $(eventTest "MODIFY" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "DELETE" "$event") ]; then
 			# Used with the deletion of files and directories
 			# rm -r test/ would trigger
 			# DELETE, ISDIR test
 			# rm test would trigger
 			# DELETE test
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "DELETE_SELF" "$event") ]; then
 			# Used with the deletion of directories. 
 			# rm -r test/ would trigger
 			# test/ DELETE_SELF
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "UNMOUNT" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "ACCESS" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "ATTRIB" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "CLOSE_WRITE" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "CLOSE_NOWRITE" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "CLOSE" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		elif [ $(eventTest "OPEN" "$event") ]; then
-			echo $event
+			#echo $event
+			echo `$command`
 		fi 
 	done
 }
